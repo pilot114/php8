@@ -1,0 +1,9 @@
+{
+    "require-dev": {
+        "symfony/var-dumper": "^5.3"
+    },
+  "require": {
+    "ext-sockets": "*",
+    "ext-pcntl": "*"
+  }
+}
