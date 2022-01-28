@@ -1,0 +1,15 @@
+{
+    "name": "pilot114/poker",
+    "authors": [
+        {
+            "name": "Oleg Chulkov",
+            "email": "pilot114@bk.ru"
+        }
+    ],
+    "require-dev": {
+        "symfony/var-dumper": "^5.3"
+    },
+    "autoload": {
+        "psr-4": {"Poker\\": "src/"}
+    }
+}
