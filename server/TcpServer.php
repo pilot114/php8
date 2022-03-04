@@ -21,7 +21,7 @@ class DateString
 	}
 }
 
-class TcpServerException extends \Exception {};
+class ServerException extends \Exception {};
 
 class TcpServer
 {
@@ -33,28 +33,33 @@ class TcpServer
 	public function listen(): void
 	{
 		if (!$this->autoSelectPort()) {
-			throw new TcpServerException('Не удалось автоматически выбрать порт');
+			throw new ServerException('Не удалось автоматически выбрать порт');
 		}
 
 		$uri = sprintf("%s://%s:%s", $this->protocol, $this->host, $this->port);
 		$socket = stream_socket_server($uri, $errno, $errstr);
 
 		if (!$socket) {
-            throw new TcpServerException('Не удалось забиндить сокет');
+            $message = sprintf("Не удалось забиндить сокет: %s (%s)", $errstr, $errno);
+            throw new ServerException($message);
 		}
 
         IO::write(sprintf("start server on %s:%s", $this->host, $this->port));
 
         while ($conn = stream_socket_accept($socket, $this->socketTimeout, $peerName)) {
             IO::write(sprintf('connected peer: %s', $peerName));
-
-            IO::write('HTTP/1.1 200 OK', $conn);
-            IO::write('Content-Type: text/html; charset=utf-8', $conn);
-            IO::write('', $conn);
-            IO::write('local time ' . DateString::now(), $conn);
+            $this->handle($conn);
             fclose($conn);
         }
         fclose($socket);
+    }
+
+    protected function handle($conn)
+    {
+        IO::write('HTTP/1.1 200 OK', $conn);
+        IO::write('Content-Type: text/html; charset=utf-8', $conn);
+        IO::write('', $conn);
+        IO::write('local time ' . DateString::now(), $conn);
     }
 
 	protected function autoSelectPort(): bool
@@ -73,5 +78,16 @@ class TcpServer
 	}
 }
 
-$server = new TcpServer();
+class HttpServer extends TcpServer
+{
+    protected function handle($conn)
+    {
+        IO::write('HTTP/1.1 200 OK', $conn);
+        IO::write('Content-Type: text/html; charset=utf-8', $conn);
+        IO::write('', $conn);
+        IO::write('hello world', $conn);
+    }
+}
+
+$server = new HttpServer();
 $server->listen();
