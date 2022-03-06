@@ -25,7 +25,6 @@ class ServerException extends \Exception {};
 
 class TcpServer
 {
-	protected string $protocol = 'tcp';
 	protected string $host = '127.0.0.1';
 	protected int $port = 80;
 	protected int $socketTimeout = 3600;
@@ -36,7 +35,7 @@ class TcpServer
 			throw new ServerException('Не удалось автоматически выбрать порт');
 		}
 
-		$uri = sprintf("%s://%s:%s", $this->protocol, $this->host, $this->port);
+		$uri = sprintf("tcp://%s:%s", $this->host, $this->port);
 		$socket = stream_socket_server($uri, $errno, $errstr);
 
 		if (!$socket) {
@@ -77,17 +76,3 @@ class TcpServer
 		return true;
 	}
 }
-
-class HttpServer extends TcpServer
-{
-    protected function handle($conn)
-    {
-        IO::write('HTTP/1.1 200 OK', $conn);
-        IO::write('Content-Type: text/html; charset=utf-8', $conn);
-        IO::write('', $conn);
-        IO::write('hello world', $conn);
-    }
-}
-
-$server = new HttpServer();
-$server->listen();
