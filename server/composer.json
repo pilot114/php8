@@ -1,0 +1,17 @@
+{
+    "name": "oleg/server",
+    "autoload": {
+        "psr-4": {
+            "Server\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Oleg",
+            "email": "chulkov@sibvaleo.com"
+        }
+    ],
+    "require": {
+        "ext-inotify": "*"
+    }
+}
